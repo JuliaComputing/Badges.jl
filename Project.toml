@@ -1,0 +1,13 @@
+name = "Badges"
+uuid = "f8f3bd14-6f44-485b-add6-c2abd0d3421f"
+authors = ["Avik Sengupta"]
+version = "0.1.0"
+
+[compat]
+julia = "1.3"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
