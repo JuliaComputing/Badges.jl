@@ -2,6 +2,7 @@ module Badges
 using JSON3
 
 global const  gFontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'"
+
 function roundUpToOdd(x) 
     x = round(Int, x)
     iseven(x) ? x+1 : x
@@ -17,7 +18,6 @@ function computeWidths( label, message )
         preferredWidthOf(message)
     )
 end
-
 
 function renderLogo(
     logo,
@@ -42,8 +42,6 @@ function renderLogo(
       "<image x='$x' y='$y' width='$logoWidth' height='14' xlink:href='$(escapeXml(logo))'/>"
     )
 end
-
-
 
 function renderText(
     content,
@@ -110,7 +108,7 @@ function renderBadge(main, leftLink, rightLink, leftWidth, rightWidth, height )
 end
 
 function render(this) 
-    return renderBadge(
+    return stripXmlWhitespace(renderBadge(
       "
       <linearGradient id='s' x2='0' y2='100%'>
         <stop offset='0' stop-color='#bbb' stop-opacity='.1'/>
@@ -134,7 +132,7 @@ function render(this)
       this.leftWidth,
       this.rightWidth,
       this.height,
-    )
+    ))
 end
 
 function Badge(; 
@@ -222,11 +220,21 @@ function Badge(;
 end
 
 
-#TODO
-stripXmlWhitespace(xml) = xml
+function stripXmlWhitespace(xml) 
+    xml = replace(xml, r">\s+" => '>')
+    xml = replace(xml, r"<\s+" => '<')
+    return strip(xml)
+end
 
-#TODO
-escapeXml(x) = x
+
+function escapeXml(s)   
+    s |>
+    x -> replace(x, '&' => "&amp;")   |>
+    x -> replace(x, '<' => "&gt;")    |> 
+    x -> replace(x, '>' => "&lt;")    |> 
+    x -> replace(x, '\"' => "&quot;") |> 
+    x -> replace(x, '\'' => "&apos;") 
+end
 
 # Verdana font metrics precalculated from the npm package anafanafo
 global const data = Ref{Any}()
