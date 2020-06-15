@@ -2,10 +2,13 @@ module Badges
 using JSON3
 
 global const  gFontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'"
-roundUpToOdd(x) = iseven(x) ? x+1 : x
+function roundUpToOdd(x) 
+    x = round(Int, x)
+    iseven(x) ? x+1 : x
+end
 
 function preferredWidthOf(str) 
-    return roundUpToOdd(widthOfCharCode(str) / 10) 
+    return roundUpToOdd(div(widthOf(str), 10)) 
 end
 
 function computeWidths( label, message )
@@ -52,7 +55,7 @@ function renderText(
       return (renderedText="", width=0 )
     end
   
-    textLength = widthOf(content)
+    textLength =  preferredWidthOf(content)
     escapedContent = escapeXml(content)
   
     shadowMargin = 150 + verticalMargin
@@ -83,8 +86,8 @@ function renderLinks(
     
     leftLink = escapeXml(leftLink)
     rightLink = escapeXml(rightLink)
-    hasLeftLink = isempty(leftLink)
-    hasRightLink = isempty(rightLink) 
+    hasLeftLink = !isempty(leftLink)
+    hasRightLink = !isempty(rightLink) 
     leftLinkWidth = hasRightLink ? leftWidth : leftWidth + rightWidth
   
     function render( link, width ) 
@@ -159,7 +162,7 @@ function Badge(;
         logoPadding,
     )
 
-    hasLabel = isempty(label)
+    hasLabel = !isempty(label)
     labelColor = hasLabel || hasLogo ? labelColor : color
     labelColor = escapeXml(labelColor)
     color = escapeXml(color)
