@@ -34,7 +34,7 @@ function renderLogo(
       )
     end
     logoHeight = 14
-    y = (badgeHeight - logoHeight) / 2
+    y = (badgeHeight - logoHeight) ÷ 2
     x = horizPadding
     return (
       true,
@@ -48,7 +48,7 @@ function renderText(
     leftMargin,
     horizPadding = 0,
     verticalMargin = 0,
-    shadow = false ) 
+    shadow = true ) 
     if (isempty(content))
       return (renderedText="", width=0 )
     end
@@ -60,14 +60,13 @@ function renderText(
     textMargin = 140 + verticalMargin
   
     outTextLength = 10 * textLength
-    x = 10 * (leftMargin + 0.5 * textLength + horizPadding)
+    x = 10 * (leftMargin + textLength ÷ 2 + horizPadding)
   
-    renderText = ""
+    renderedText = ""
     if (shadow) 
       renderedText = "<text x='$x' y='$shadowMargin' fill='#010101' fill-opacity='.3' transform='scale(.1)' textLength='$outTextLength'>$escapedContent</text>"
     end
-    renderedText = renderText * "<text x='$x' y='$textMargin' transform='scale(.1)' textLength='$outTextLength'>$escapedContent</text>"
-  
+    renderedText = renderedText * "<text x='$x' y='$textMargin' transform='scale(.1)' textLength='$outTextLength'>$escapedContent</text>"
     return (
       renderedText,
       textLength,
@@ -100,8 +99,7 @@ end
 
 function renderBadge(main, leftLink, rightLink, leftWidth, rightWidth, height ) 
     width = leftWidth + rightWidth
-    return "
-      <svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='$width' height='$height'>
+    return "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='$width' height='$height'>
       $main
       $(renderLinks(leftLink, rightLink, leftWidth, rightWidth, height ))
       </svg>"
@@ -109,8 +107,7 @@ end
 
 function render(this) 
     return stripXmlWhitespace(renderBadge(
-      "
-      <linearGradient id='s' x2='0' y2='100%'>
+      "<linearGradient id='s' x2='0' y2='100%'>
         <stop offset='0' stop-color='#bbb' stop-opacity='.1'/>
         <stop offset='1' stop-opacity='.1'/>
       </linearGradient>
@@ -146,8 +143,8 @@ function Badge(;
     color = "#4c1",
     labelColor = "#555",
     fontFamily = gFontFamily,
-    height = 18,
-    verticalMargin=-10,
+    height = 20,
+    verticalMargin=0,
     shadow=true)
 
     horizPadding = 5
