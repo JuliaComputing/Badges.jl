@@ -60,7 +60,7 @@ function renderText(
     textMargin = 140 + verticalMargin
   
     outTextLength = 10 * textLength
-    x = 10 * (leftMargin + textLength ÷ 2 + horizPadding)
+    x = round(Int, 10 * (leftMargin + textLength / 2 + horizPadding))
   
     renderedText = ""
     if (shadow) 
@@ -105,6 +105,14 @@ function renderBadge(main, leftLink, rightLink, leftWidth, rightWidth, height )
       </svg>"
 end
 
+
+"""
+```
+render(b::Badge)::String
+```
+
+Fully render a badge to SVG. Returns a String. 
+"""
 function render(this) 
     return stripXmlWhitespace(renderBadge(
       "<linearGradient id='s' x2='0' y2='100%'>
@@ -132,6 +140,27 @@ function render(this)
     ))
 end
 
+"""
+```
+Badge(; 
+    label="",
+    message,
+    leftLink="",
+    rightLink="",
+    logo="",
+    logoWidth=0,
+    logoPadding=0,
+    color = "#4c1",
+    labelColor = "#555",
+    fontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'",
+    height = 20,
+    verticalMargin=0,
+    shadow=true)::Badge
+```
+
+Create a Badge. Returns a Badges.Badge object, that contains metadata 
+and pre-rendered segments. 
+""" 
 function Badge(; 
     label="",
     message,
@@ -234,6 +263,8 @@ function escapeXml(s)
 end
 
 # Verdana font metrics precalculated from the npm package anafanafo
+# =================================================================
+
 global const data = Ref{Any}()
 global const em = Ref{Float64}()
 
@@ -264,7 +295,9 @@ isControlChar(charCode) = charCode <=31 || charCode == 127
 
 
 function __init__()
-    data[] = JSON3.read(read("src/widths.json", String))
+    modulepath = dirname(pathof(Badges))
+    @show modulepath
+    data[] = JSON3.read(read("$modulepath/widths.json", String))
     em[] = widthOfCharCode(Int('m'))
 end
 
