@@ -296,7 +296,6 @@ isControlChar(charCode) = charCode <=31 || charCode == 127
 
 function __init__()
     modulepath = dirname(pathof(Badges))
-    @show modulepath
     data[] = JSON3.read(read("$modulepath/widths.json", String))
     em[] = widthOfCharCode(Int('m'))
 end
