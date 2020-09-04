@@ -30,8 +30,8 @@ Badge(;
     verticalMargin=0,
     shadow=true)::Badge
 ```
-Create a Badge. Returns a Badges.Badge object, that contains metadata 
-and pre-rendered segments. 
+Create a Badge. Returns a `Badges.Badge` object, that contains metadata 
+and some pre-rendered segments. 
 
 ---
 
