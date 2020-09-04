@@ -1,6 +1,7 @@
 module Badges
 using JSON3
 
+export Badge
 global const  gFontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'"
 
 function roundUpToOdd(x) 
