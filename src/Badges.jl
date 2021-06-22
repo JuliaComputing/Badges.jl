@@ -4,13 +4,13 @@ using JSON3
 export Badge
 global const  gFontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'"
 
-function roundUpToOdd(x) 
+function roundUpToOdd(x)
     x = round(Int, x)
     iseven(x) ? x+1 : x
 end
 
-function preferredWidthOf(str) 
-    return roundUpToOdd(div(widthOf(str), 10)) 
+function preferredWidthOf(str)
+    return roundUpToOdd(div(widthOf(str), 10))
 end
 
 function computeWidths( label, message )
@@ -26,8 +26,8 @@ function renderLogo(
     horizPadding,
     logoWidth = 14,
     logoPadding = 0
-    ) 
-    if isempty(logo) 
+    )
+    if isempty(logo)
       return (
         false,
         0,
@@ -49,22 +49,22 @@ function renderText(
     leftMargin,
     horizPadding = 0,
     verticalMargin = 0,
-    shadow = true ) 
+    shadow = true )
     if (isempty(content))
       return (renderedText="", width=0 )
     end
-  
+
     textLength =  preferredWidthOf(content)
     escapedContent = escapeXml(content)
-  
+
     shadowMargin = 150 + verticalMargin
     textMargin = 140 + verticalMargin
-  
+
     outTextLength = 10 * textLength
     x = round(Int, 10 * (leftMargin + textLength / 2 + horizPadding))
-  
+
     renderedText = ""
-    if (shadow) 
+    if (shadow)
       renderedText = "<text x='$x' y='$shadowMargin' fill='#010101' fill-opacity='.3' transform='scale(.1)' textLength='$outTextLength'>$escapedContent</text>"
     end
     renderedText = renderedText * "<text x='$x' y='$textMargin' transform='scale(.1)' textLength='$outTextLength'>$escapedContent</text>"
@@ -80,25 +80,25 @@ function renderLinks(
     leftWidth,
     rightWidth,
     height
-  ) 
-    
+  )
+
     leftLink = escapeXml(leftLink)
     rightLink = escapeXml(rightLink)
     hasLeftLink = !isempty(leftLink)
-    hasRightLink = !isempty(rightLink) 
+    hasRightLink = !isempty(rightLink)
     leftLinkWidth = hasRightLink ? leftWidth : leftWidth + rightWidth
-  
-    function render( link, width ) 
+
+    function render( link, width )
       return "<a target='_blank' xlink:href='$link'><rect width='$width' height='$height' fill='rgba(0,0,0,0)'/></a>"
     end
-  
+
     return (
       (hasRightLink ? render( rightLink, leftWidth + rightWidth) : "") *
       (hasLeftLink ? render( leftLink, leftLinkWidth) : "")
     )
 end
 
-function renderBadge(main, leftLink, rightLink, leftWidth, rightWidth, height ) 
+function renderBadge(main, leftLink, rightLink, leftWidth, rightWidth, height )
     width = leftWidth + rightWidth
     return "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='$width' height='$height'>
       $main
@@ -112,9 +112,9 @@ end
 render(b::Badge)::String
 ```
 
-Fully render a badge to SVG. Returns a String. 
+Fully render a badge to SVG. Returns a String.
 """
-function render(this) 
+function render(this)
     return stripXmlWhitespace(renderBadge(
       "<linearGradient id='s' x2='0' y2='100%'>
         <stop offset='0' stop-color='#bbb' stop-opacity='.1'/>
@@ -143,7 +143,7 @@ end
 
 """
 ```
-Badge(; 
+Badge(;
     label="",
     message,
     leftLink="",
@@ -151,6 +151,7 @@ Badge(;
     logo="",
     logoWidth=0,
     logoPadding=0,
+    horizontalPadding = 5,
     color = "#4c1",
     labelColor = "#555",
     fontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'",
@@ -159,30 +160,29 @@ Badge(;
     shadow=true)::Badge
 ```
 
-Create a Badge. Returns a Badges.Badge object, that contains metadata 
-and pre-rendered segments. 
-""" 
-function Badge(; 
-    label="",
+Create a Badge. Returns a Badges.Badge object, that contains metadata
+and pre-rendered segments.
+"""
+function Badge(;
+    label = "",
     message,
-    leftLink="",
-    rightLink="",
-    logo="",
-    logoWidth=0,
-    logoPadding=0,
+    leftLink = "",
+    rightLink = "",
+    logo = "",
+    logoWidth = 0,
+    logoPadding = 0,
+    horizontalPadding = 5,
     color = "#4c1",
     labelColor = "#555",
     fontFamily = gFontFamily,
     height = 20,
-    verticalMargin=0,
-    shadow=true)
-
-    horizPadding = 5
+    verticalMargin = 0,
+    shadow = true)
 
     hasLogo, totalLogoWidth, renderedLogo  = renderLogo(
         logo,
         height,
-        horizPadding,
+        horizontalPadding,
         logoWidth,
         logoPadding,
     )
@@ -196,19 +196,19 @@ function Badge(;
     renderedLabel, labelWidth = renderText(
         label,
         labelMargin,
-        horizPadding,
+        horizontalPadding,
         verticalMargin,
         shadow
     )
 
-    leftWidth = hasLabel ? labelWidth + 2 * horizPadding + totalLogoWidth : 0
+    leftWidth = hasLabel ? labelWidth + 2 * horizontalPadding + totalLogoWidth : 0
 
     messageMargin = leftWidth - (!isempty(message) ? 1 : 0)
 
-    if (!hasLabel) 
-        if (hasLogo) 
-        messageMargin = messageMargin + totalLogoWidth + horizPadding
-        else 
+    if (!hasLabel)
+        if (hasLogo)
+        messageMargin = messageMargin + totalLogoWidth + horizontalPadding
+        else
         messageMargin = messageMargin + 1
         end
     end
@@ -216,22 +216,22 @@ function Badge(;
     renderedMessage, messageWidth  = renderText(
         message,
         messageMargin,
-        horizPadding,
+        horizontalPadding,
         verticalMargin,
         shadow
     )
 
-    rightWidth = messageWidth + 2 * horizPadding
+    rightWidth = messageWidth + 2 * horizontalPadding
 
-    if (hasLogo && !hasLabel) 
-        rightWidth += totalLogoWidth + horizPadding - 1
+    if (hasLogo && !hasLabel)
+        rightWidth += totalLogoWidth + horizontalPadding - 1
     end
     width = leftWidth + rightWidth
 
 
-    return (    
+    return (
         leftLink = leftLink,
-        rightLink = rightLink, 
+        rightLink = rightLink,
         leftWidth = leftWidth,
         rightWidth = rightWidth,
         width = width,
@@ -247,20 +247,20 @@ function Badge(;
 end
 
 
-function stripXmlWhitespace(xml) 
+function stripXmlWhitespace(xml)
     xml = replace(xml, r">\s+" => '>')
     xml = replace(xml, r"<\s+" => '<')
     return strip(xml)
 end
 
 
-function escapeXml(s)   
+function escapeXml(s)
     s |>
     x -> replace(x, '&' => "&amp;")   |>
-    x -> replace(x, '<' => "&gt;")    |> 
-    x -> replace(x, '>' => "&lt;")    |> 
-    x -> replace(x, '\"' => "&quot;") |> 
-    x -> replace(x, '\'' => "&apos;") 
+    x -> replace(x, '<' => "&gt;")    |>
+    x -> replace(x, '>' => "&lt;")    |>
+    x -> replace(x, '\"' => "&quot;") |>
+    x -> replace(x, '\'' => "&apos;")
 end
 
 # Verdana font metrics precalculated from the npm package anafanafo
@@ -272,7 +272,7 @@ global const em = Ref{Float64}()
 """
     `widthOfCharCode(charCode; approx=true)`
 
-Width of one character in Verdana 110 pts. 
+Width of one character in Verdana 110 pts.
 If `approx` is true, any unknwon character will be measured as 'm'. Otherwise 0.0
 """
 function widthOfCharCode(charCode; approx=true)
@@ -282,7 +282,7 @@ function widthOfCharCode(charCode; approx=true)
     end
     if isnothing(res)
         if approx; return em[]; else return 0.0; end
-    else 
+    else
         return data[][res][3]
     end
 end
