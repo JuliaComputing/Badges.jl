@@ -1,5 +1,4 @@
 module Badges
-using JSON3
 
 include("widths.jl")
 
