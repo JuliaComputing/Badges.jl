@@ -1,8 +1,9 @@
 module Badges
-using JSON3
+
+include("widths.jl")
 
 export Badge
-global const  gFontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'"
+const gFontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'"
 
 function roundUpToOdd(x)
     x = round(Int, x)
@@ -263,11 +264,6 @@ function escapeXml(s)
     x -> replace(x, '\'' => "&apos;")
 end
 
-# Verdana font metrics precalculated from the npm package anafanafo
-# =================================================================
-
-global const data = Ref{Any}()
-global const em = Ref{Float64}()
 
 """
     `widthOfCharCode(charCode; approx=true)`
@@ -277,13 +273,13 @@ If `approx` is true, any unknwon character will be measured as 'm'. Otherwise 0.
 """
 function widthOfCharCode(charCode; approx=true)
     if isControlChar(charCode); return 0.0; end
-    res = findfirst(data[]) do x
-        charCode >= x[1] && charCode <= x[2]
+    res = findfirst(WIDTHS) do x
+        charCode >= x[1][1] && charCode <= x[1][2]
     end
     if isnothing(res)
-        if approx; return em[]; else return 0.0; end
+        if approx; return EM; else return 0.0; end
     else
-        return data[][res][3]
+        return WIDTHS[res][2]
     end
 end
 
@@ -294,11 +290,9 @@ widthOf(text::AbstractString; approx=true) = reduce(+, [widthOfCharCode(Int(x), 
 
 isControlChar(charCode) = charCode <=31 || charCode == 127
 
+# Verdana font metrics precalculated from the npm package anafanafo
+# =================================================================
 
-function __init__()
-    modulepath = dirname(pathof(Badges))
-    data[] = JSON3.read(read("$modulepath/widths.json", String))
-    em[] = widthOfCharCode(Int('m'))
-end
+const EM = widthOfCharCode(Int('m'))::Float64
 
 end
