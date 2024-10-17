@@ -1,6 +1,8 @@
 module Badges
 using JSON3
 
+include("widths.jl")
+
 export Badge
 global const  gFontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'"
 
@@ -263,11 +265,6 @@ function escapeXml(s)
     x -> replace(x, '\'' => "&apos;")
 end
 
-# Verdana font metrics precalculated from the npm package anafanafo
-# =================================================================
-
-global const data = Ref{Any}()
-global const em = Ref{Float64}()
 
 """
     `widthOfCharCode(charCode; approx=true)`
@@ -294,11 +291,10 @@ widthOf(text::AbstractString; approx=true) = reduce(+, [widthOfCharCode(Int(x), 
 
 isControlChar(charCode) = charCode <=31 || charCode == 127
 
+# Verdana font metrics precalculated from the npm package anafanafo
+# =================================================================
 
-function __init__()
-    modulepath = dirname(pathof(Badges))
-    data[] = JSON3.read(read("$modulepath/widths.json", String))
-    em[] = widthOfCharCode(Int('m'))
-end
+const data = Ref{Any}(WIDTHS)
+const em = Ref{Float64}(widthOfCharCode(Int('m')))
 
 end
