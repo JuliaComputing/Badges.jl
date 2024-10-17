@@ -274,12 +274,12 @@ If `approx` is true, any unknwon character will be measured as 'm'. Otherwise 0.
 function widthOfCharCode(charCode; approx=true)
     if isControlChar(charCode); return 0.0; end
     res = findfirst(WIDTHS) do x
-        charCode >= x[1] && charCode <= x[2]
+        charCode >= x[1][1] && charCode <= x[1][2]
     end
     if isnothing(res)
         if approx; return EM; else return 0.0; end
     else
-        return WIDTHS[res][3]
+        return WIDTHS[res][2]
     end
 end
 
