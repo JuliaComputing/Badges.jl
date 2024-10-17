@@ -4,7 +4,7 @@ using JSON3
 include("widths.jl")
 
 export Badge
-global const  gFontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'"
+const gFontFamily = "font-family='Verdana,Geneva,DejaVu Sans,sans-serif'"
 
 function roundUpToOdd(x)
     x = round(Int, x)
@@ -274,13 +274,13 @@ If `approx` is true, any unknwon character will be measured as 'm'. Otherwise 0.
 """
 function widthOfCharCode(charCode; approx=true)
     if isControlChar(charCode); return 0.0; end
-    res = findfirst(data[]) do x
+    res = findfirst(DATA) do x
         charCode >= x[1] && charCode <= x[2]
     end
     if isnothing(res)
-        if approx; return em[]; else return 0.0; end
+        if approx; return EM; else return 0.0; end
     else
-        return data[][res][3]
+        return DATA[res][3]
     end
 end
 
@@ -294,7 +294,7 @@ isControlChar(charCode) = charCode <=31 || charCode == 127
 # Verdana font metrics precalculated from the npm package anafanafo
 # =================================================================
 
-const data = Ref{Any}(WIDTHS)
-const em = Ref{Float64}(widthOfCharCode(Int('m')))
+const DATA = WIDTHS # from widths.jl
+const EM = widthOfCharCode(Int('m'))::Float64
 
 end
